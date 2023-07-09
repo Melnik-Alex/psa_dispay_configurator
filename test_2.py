@@ -12,6 +12,7 @@ from threading import Thread
 from time import sleep
 
 response = ''
+response_success = ''
 zones_count = 0
 
 
@@ -48,6 +49,7 @@ class qt(QMainWindow):
 
     def __init__(self):
         global response
+        response_success
         QMainWindow.__init__(self)
         # loadUi('qt.ui', self)
         loadUi('001.ui', self)
@@ -67,7 +69,7 @@ class qt(QMainWindow):
         global ser
         ser = serial.Serial(self.port_list_combo.currentText(), 115200, timeout=1)
         ser.write(mytext.encode())
-
+        self.read_data.setEnabled(True)
         self.worker = Worker()  # a new worker to perform those tasks
         self.thread = QThread()  # a new thread to run our background tasks in
         self.worker.moveToThread(
@@ -92,52 +94,53 @@ class qt(QMainWindow):
         ser.close()
 
     def onIntReady(self, i):
+        global response_success
         if i != '':
             a = i
             a = str(a).replace("\n", "").replace("\r", "")
             if i[0] + i[1] == '62':
-                global zones_count
                 if i[2] + i[3] + i[4] + i[5] == '0200':
-                    self.textBrowser.append('Zone 0200 was readed!')
-                    # print('0200 = ' + i.replace('620200', ''))
-                    self.zone_0200.setText(i.replace('620200', ''))
-                    zones_count += 1
-                if i[2] + i[3] + i[4] + i[5] == '0400':
-                    self.textBrowser.append('Zone 0400 was readed!')
-                    # print('0400 = ' + i.replace('620400', ''))
-                    self.zone_0400.setText(i.replace('620400', ''))
-                    zones_count += 1
-                if i[2] + i[3] + i[4] + i[5] == '0500':
-                    self.textBrowser.append('Zone 0500 was readed!')
-                    # print('0500 = ' + i.replace('620500', ''))
-                    self.zone_0500.setText(i.replace('620500', ''))
-                    zones_count += 1
-                if i[2] + i[3] + i[4] + i[5] == '0600':
-                    self.textBrowser.append('Zone 0600 was readed!')
-                    # print('0600 = ' + i.replace('620600', ''))
-                    self.zone_0600.setText(i.replace('620600', ''))
-                    zones_count += 1
-                if i[2] + i[3] + i[4] + i[5] == '2100':
-                    self.textBrowser.append('Zone 2100 was readed!')
-                    print('2100 = '+ i.replace('622100', ''))
-                    self.zone_2100.setText(i.replace('622100', ''))
-                    self.zone_2100_edit_line.setText(i.replace('622100', '').replace(' ',''))
-                    zones_count = zones_count + 1
-                    if zones_count == 5:
-                        self.textBrowser.append('All zones was successfully readed!')
+                    data_to_zone = i.replace('620200', '').replace(' ','').replace('\r', '').replace('\n', '')
+                    if float(len(data_to_zone) / 2).is_integer():
+                        self.zone_0200.setText(data_to_zone)
                     else:
-                        self.textBrowser.append('Not all zones was successfully readed! Read it again!')
-                        self.zone_0200.setText('')
-                        self.zone_0400.setText('')
-                        self.zone_0500.setText('')
-                        self.zone_0600.setText('')
-                        self.zone_2100.setText('')
-                        zones_count = 0
-                        self.read_progress.setValue(zones_count)
-                self.read_progress.setValue(zones_count)
+                        pass
+                if i[2] + i[3] + i[4] + i[5] == '0400':
+                    data_to_zone = i.replace('620400', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                    if float(len(data_to_zone) / 2).is_integer():
+                        self.zone_0400.setText(data_to_zone)
+                    else:
+                        pass
+                if i[2] + i[3] + i[4] + i[5] == '0500':
+                    data_to_zone = i.replace('620500', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                    if float(len(data_to_zone) / 2).is_integer():
+                        self.zone_0500.setText(data_to_zone)
+                    else:
+                        pass
+                if i[2] + i[3] + i[4] + i[5] == '0600':
+                    data_to_zone = i.replace('620600', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                    if float(len(data_to_zone) / 2).is_integer():
+                        self.zone_0600.setText(data_to_zone)
+                    else:
+                        pass
+                if i[2] + i[3] + i[4] + i[5] == '2100':
+                    data_to_zone = i.replace('622100', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                    if float(len(data_to_zone) / 2).is_integer():
+                        self.zone_2100.setText(data_to_zone)
+                        self.zone_2100_edit_line.setText(data_to_zone)
+                    else:
+                        pass
+                if i[2] + i[3] + i[4] + i[5] == '2901':
+                    data_to_zone = i.replace('62', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                    print(data_to_zone)
+
+            elif i[0] + i[1] == '6E':
+                data_from_zone = i[2] + i[3] + i[4] + i[5]
+                response_success = i
+                self.textBrowser.append('Zone ' + data_from_zone + ' was written successfully!')
+
             else:
                 self.textBrowser.append(a)
-                zones_count = 0
 
     def on_connect_button_clicked(self):
         if self.connect_button:
@@ -167,7 +170,7 @@ class qt(QMainWindow):
             self.textBrowser.append("CONNECTED!")
             # self.label_5.setStyleSheet('color: green')
             x = 1
-            self.textBrowser.setText(":")
+            self.textBrowser.setText("Port opened!")
         self.connect_button = True
 
     def on_pushButton_3_clicked(self):
@@ -181,27 +184,78 @@ class qt(QMainWindow):
         ser.write(mytext.encode())
         self.connect_button = True
 
+    def write_zone(self, zone, data_to_write):
+        # Writing zones to LCD
+        global zones_count
+        ser.flush()
+        zone_name = f'self.zone_{zone}'
+        eval(zone_name).setText(' ')
+        sleep(0.05)
+        write_str = ('2E' + zone + data_to_write + '\n').encode()
+        ser.write(write_str)
+        while eval(zone_name).text() == ' ' and not (float(len(eval(zone_name).text()))/2).is_integer():
+            print('Trying to read zone ' +zone)
+            ser.flush()
+            sleep(0.1)
+            ser.write(write_str)
+            print(float(len(eval(zone_name).text())))
+
+        zones_count += 1
+        self.read_progress.setValue(zones_count)
+        self.textBrowser.append('Zone '+zone+' was readed!')
+
+    def read_zone(self, zone):
+        # Reading zones from LCD
+        global zones_count
+        ser.flush()
+        zone_name = f'self.zone_{zone}'
+        eval(zone_name).setText(' ')
+        sleep(0.05)
+        write_str = ('22' + zone + '\n').encode()
+        ser.write(write_str)
+        while eval(zone_name).text() == ' ' and not (float(len(eval(zone_name).text()))/2).is_integer():
+            print('Trying to read zone ' +zone)
+            ser.flush()
+            sleep(0.1)
+            ser.write(write_str)
+            print(float(len(eval(zone_name).text())))
+
+        zones_count += 1
+        self.read_progress.setValue(zones_count)
+        self.textBrowser.append('Zone '+zone+' was readed!')
+
     def read_data_thread(self):
         global response
         sleep(1)
+        ser.flush()
         ser.write(('>772:672' + '\n').encode())
         sleep(0.5)
+        while str(response) != (str(b'OK\r\n')):
+            ser.flush()
+            sleep(0.5)
+            ser.write(('>772:672' + '\n').encode())
+            sleep(0.5)
         if str(response) == (str(b'OK\r\n')):
+            ser.flush()
             sleep(0.5)
             ser.write(('1003' + '\n').encode())
             sleep(0.2)
+            while str(response) != (str(b'5003\r\n')):
+                ser.flush()
+                sleep(0.5)
+                ser.write(('1003' + '\n').encode())
+                sleep(0.2)
             if str(response) == (str(b'5003\r\n')):
-                # ser.write((':ECEC:03:03'+ '\n').encode())
                 sleep(0.1)
-                ser.write(('220200' + '\n').encode())
-                sleep(0.05)
-                ser.write(('220400' + '\n').encode())
-                sleep(0.05)
-                ser.write(('220500' + '\n').encode())
-                sleep(0.05)
-                ser.write(('220600' + '\n').encode())
-                sleep(0.05)
-                ser.write(('222100' + '\n').encode())
+                self.read_zone(zone='0200')
+                sleep(0.1)
+                self.read_zone(zone='0400')
+                sleep(0.1)
+                self.read_zone(zone='0500')
+                sleep(0.1)
+                self.read_zone(zone='0600')
+                sleep(0.1)
+                self.read_zone(zone='2100')
             else:
                 sleep(1)
                 ser.write(('1003' + '\n').encode())
@@ -211,41 +265,60 @@ class qt(QMainWindow):
         self.connect_button = True
 
     def write_data_thread(self, data):
-        global response
-        sleep(1)
+        global response_success
+        print('wd!')
+        ser.flush()
+        sleep(0.5)
         ser.write(('1003' + '\n').encode())
         sleep(0.2)
+        while str(response) != (str(b'5003\r\n')):
+            ser.flush()
+            sleep(0.5)
+            ser.write(('1003' + '\n').encode())
+            sleep(0.2)
         if str(response) == (str(b'5003\r\n')):
             ser.write((':ECEC:03:03'+ '\n').encode())
+            print('EC!')
+            sleep(1)
+            ser.flush()
             sleep(1)
             ser.write(('2E' + '2100' + data + '\n').encode())
-            sleep(0.05)
+            resp = 0
+            while str(response) != (str(b'6E2100\r\n')):
+                resp +=1
+                sleep(0.01)
+                print(resp)
+                if resp == 100:
+                    print(resp)
+                    resp = 0
+                    ser.flush()
+                    ser.write(('2E' + '2100' + data + '\n').encode())
+            resp = 0
+            ser.flush()
             ser.write(('2E2901FD000000010101' + '\n').encode())
-            sleep(0.05)
+            while str(response) != (str(b'6E2901\r\n')):
+                resp += 1
+                sleep(0.01)
+                print(resp)
+                if resp == 100:
+                    print(resp)
+                    resp = 0
+                    ser.flush()
+                    ser.write(('2E2901FD000000010101' + '\n').encode())
             ser.write(('222901' + '\n').encode())
-        else:
-            sleep(1)
-            ser.write(('1003' + '\n').encode())
+        response_success = ''
 
         self.connect_button = True
 
     def new_thread(self):
+        global zones_count
+        zones_count = 0
+        self.read_progress.setValue(zones_count)
         t1 = Thread(target=self.read_data_thread)
         t1.start()
 
-    def write_thread(self):
-        data = self.zone_2100_edit_line.text().replace(' ','')
-        if 14 > len(data):
-            print('wrong data' + str(len(data)))
-            return
-        else:
-            pass
-        if len(data) > 18:
-            print('wrong data' + str(len(data)))
-            return
-        else:
-            pass
-
+    def write_thread(self, data):
+        ser.flush()
         t1 = Thread(target=self.write_data_thread(data))
         t1.start()
 
@@ -262,7 +335,18 @@ class qt(QMainWindow):
         if self.connect_button:
             self.connect_button = False
             return
-        self.write_thread()
+        data = self.zone_2100_edit_line.text().replace(' ', '').replace('\r', '').replace('\n', '')
+        if 14 > len(data):
+            self.textBrowser.setText('Data too short - ' + str(len(data)) + ' symbols.'+'\n'+'Expected more (14 max)')
+            return
+        else:
+            pass
+        if len(data) > 18:
+            self.textBrowser.setText('Data too long - ' + str(len(data)) + ' symbols'+'\n'+'Expected less (18 max)')
+            return
+        else:
+            pass
+        self.write_thread(data)
         self.textBrowser.setText('Writing')
         self.connect_button = True
 
