@@ -127,7 +127,7 @@ class qt(QMainWindow):
                     data_to_zone = i.replace('622100', '').replace(' ', '').replace('\r', '').replace('\n', '')
                     if float(len(data_to_zone) / 2).is_integer():
                         self.zone_2100.setText(data_to_zone)
-                        self.zone_2100_edit_line.setText(data_to_zone)
+                        self.zone_2101.setText(data_to_zone)
                     else:
                         pass
                 if i[2] + i[3] + i[4] + i[5] == '2901':
@@ -265,8 +265,7 @@ class qt(QMainWindow):
         self.connect_button = True
 
     def write_data_thread(self, data):
-        global response_success
-        print('wd!')
+        self.textBrowser.setText('Unlocking display')
         ser.flush()
         sleep(0.5)
         ser.write(('1003' + '\n').encode())
@@ -278,10 +277,11 @@ class qt(QMainWindow):
             sleep(0.2)
         if str(response) == (str(b'5003\r\n')):
             ser.write((':ECEC:03:03'+ '\n').encode())
-            print('EC!')
+            self.textBrowser.append('OK')
             sleep(1)
             ser.flush()
             sleep(1)
+            self.textBrowser.append('Start writing')
             ser.write(('2E' + '2100' + data + '\n').encode())
             resp = 0
             while str(response) != (str(b'6E2100\r\n')):
@@ -306,7 +306,6 @@ class qt(QMainWindow):
                     ser.flush()
                     ser.write(('2E2901FD000000010101' + '\n').encode())
             ser.write(('222901' + '\n').encode())
-        response_success = ''
 
         self.connect_button = True
 
