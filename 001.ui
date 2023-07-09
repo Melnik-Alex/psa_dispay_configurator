@@ -56,7 +56,7 @@
       <x>10</x>
       <y>60</y>
       <width>231</width>
-      <height>131</height>
+      <height>151</height>
      </rect>
     </property>
    </widget>
@@ -89,7 +89,7 @@
       <x>250</x>
       <y>10</y>
       <width>231</width>
-      <height>211</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="title">
@@ -360,6 +360,41 @@
      </property>
      <property name="text">
       <string>Read data</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="read_faults">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>180</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Read faults</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="clear_faults">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>200</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clear faults</string>
      </property>
     </widget>
    </widget>
@@ -1962,7 +1997,7 @@
       <x>490</x>
       <y>10</y>
       <width>281</width>
-      <height>211</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="title">

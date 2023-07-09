@@ -62,15 +62,17 @@ class qt(QMainWindow):
         self.CopyFlag = 0
 
     def start_loop(self):
-        #mytext = "\n"  # Send first enter
+        # mytext = "\n"  # Send first enter
         global ser
         if self.connect_button_conn.text() == 'Disconnect':
             self.worker.working = False
             self.worker.finished.connect(self.thread.quit)
             ser.close()
-            self.textBrowser.setText('Port '+self.port_list_combo.currentText()+' was closed')
+            self.textBrowser.setText('Port ' + self.port_list_combo.currentText() + ' was closed')
             self.textBrowser.setStyleSheet('color: red')
             self.read_data.setEnabled(False)
+            self.read_faults.setEnabled(False)
+            self.clear_faults.setEnabled(False)
             self.port_list_combo.setEnabled(True)
             self.group_zones_to_write.setEnabled(False)
             self.connect_button_conn.setText('Connect')
@@ -78,10 +80,18 @@ class qt(QMainWindow):
         else:
             self.textBrowser.setStyleSheet('color: black')
             pass
-        ser = serial.Serial(self.port_list_combo.currentText(), 115200, timeout=1)
+        ports = self.port_list_combo.currentText()
+
+        if ports == '':
+            self.textBrowser.setText('No COM port selected!')
+            return
+        else:
+            ser = serial.Serial(self.port_list_combo.currentText(), 115200, timeout=1)
         self.connect_button_conn.setText('Disconnect')
         self.port_list_combo.setEnabled(False)
         self.read_data.setEnabled(True)
+        self.read_faults.setEnabled(True)
+        self.clear_faults.setEnabled(True)
         self.worker = Worker()  # a new worker to perform those tasks
         self.thread = QThread()  # a new thread to run our background tasks in
         self.worker.moveToThread(
@@ -94,7 +104,7 @@ class qt(QMainWindow):
         self.worker.finished.connect(self.worker.deleteLater)  # have worker mark itself for deletion
         self.thread.finished.connect(self.thread.deleteLater)  # have thread mark itself for deletion
         self.thread.start()
-
+        self.unlock_for_read_thread()
 
     def onIntReady(self, i):
         global response_success
@@ -161,19 +171,16 @@ class qt(QMainWindow):
             return
 
         # Port Detection START
-        ports = [
-            p.device
-            for p in serial.tools.list_ports.comports()
-            if 'USB' in p.description
-        ]
+        ports = self.port_list_combo.currentText()
 
-        if not ports:
-            ports = ['NONE']
+        if ports == '':
+            self.textBrowser.setText('No COM port selected!')
+            return
         # Port Detection END
 
-        if ports[0] != 'NONE':
+        if ports[0]:
             x = 1
-            self.textBrowser.setText('Port '+self.port_list_combo.currentText()+' opened successfully')
+            self.textBrowser.setText('Port ' + self.port_list_combo.currentText() + ' opened successfully')
         self.connect_button = True
 
     def on_pushButton_3_clicked(self):
@@ -232,44 +239,48 @@ class qt(QMainWindow):
         self.read_progress.setValue(zones_count)
         self.textBrowser.append('Zone ' + zone + ' was readed!')
 
-    def read_data_thread(self):
+    def unlock_before_read_data(self):
+        # First unlock of Arduino
         global response
-        sleep(1)
         ser.flush()
+        sleep(0.05)
         ser.write(('>772:672' + '\n').encode())
-        sleep(0.5)
+        resp = 0
         while str(response) != (str(b'OK\r\n')):
-            ser.flush()
-            sleep(0.5)
-            ser.write(('>772:672' + '\n').encode())
-            sleep(0.5)
+            resp += 1
+            sleep(0.01)
+            if resp == 100:
+                resp = 0
+                ser.flush()
+                ser.write(('>772:672' + '\n').encode())
+        resp = 0
         if str(response) == (str(b'OK\r\n')):
             ser.flush()
-            sleep(0.5)
+            sleep(0.05)
             ser.write(('1003' + '\n').encode())
-            sleep(0.2)
             while str(response) != (str(b'5003\r\n')):
-                ser.flush()
-                sleep(0.5)
-                ser.write(('1003' + '\n').encode())
-                sleep(0.2)
+                resp += 1
+                sleep(0.01)
+                if resp == 100:
+                    resp = 0
+                    ser.flush()
+                    ser.write(('1003' + '\n').encode())
             if str(response) == (str(b'5003\r\n')):
-                sleep(0.1)
-                self.read_zone(zone='0200')
-                sleep(0.1)
-                self.read_zone(zone='0400')
-                sleep(0.1)
-                self.read_zone(zone='0500')
-                sleep(0.1)
-                self.read_zone(zone='0600')
-                sleep(0.1)
-                self.read_zone(zone='2100')
-            else:
-                sleep(1)
-                ser.write(('1003' + '\n').encode())
-        else:
-            sleep(1)
-            ser.write(('>772:672' + '\n').encode())
+                self.connect_button = True
+                pass
+
+    def read_data_thread(self):
+        global response
+        self.unlock_before_read_data()
+        self.read_zone(zone='0200')
+        sleep(0.1)
+        self.read_zone(zone='0400')
+        sleep(0.1)
+        self.read_zone(zone='0500')
+        sleep(0.1)
+        self.read_zone(zone='0600')
+        sleep(0.1)
+        self.read_zone(zone='2100')
         self.connect_button = True
 
     def unlock_display(self):
@@ -321,7 +332,6 @@ class qt(QMainWindow):
         zones_write_count = 0
         self.connect_button = True
 
-
     def new_thread(self):
         global zones_count
         zones_count = 0
@@ -333,6 +343,11 @@ class qt(QMainWindow):
         ser.flush()
         t2 = Thread(target=self.write_data_thread)
         t2.start()
+
+    def unlock_for_read_thread(self):
+        ser.flush()
+        t3 = Thread(target=self.unlock_before_read_data)
+        t3.start()
 
     def on_read_data_clicked(self):
         # Send data from serial port:
@@ -352,6 +367,28 @@ class qt(QMainWindow):
             return
         self.write_thread()
         self.textBrowser.setText('Writing')
+        self.connect_button = True
+
+    def on_clear_faults_clicked(self):
+        # Clearing faults
+        self.textBrowser.setStyleSheet('color: black')
+        if self.connect_button:
+            self.connect_button = False
+            return
+        self.textBrowser.setText('')
+        ser.flush()
+        ser.write(('14FFFFFF' + '\n').encode())
+        self.connect_button = True
+
+    def on_read_faults_clicked(self):
+        # Reading faults
+        self.textBrowser.setStyleSheet('color: black')
+        if self.connect_button:
+            self.connect_button = False
+            return
+        self.textBrowser.setText('')
+        ser.flush()
+        ser.write(('190209' + '\n').encode())
         self.connect_button = True
 
 
