@@ -49,7 +49,7 @@ class qt(QMainWindow):
 
     def __init__(self):
         global response
-        response_success
+        global response_success
         QMainWindow.__init__(self)
         # loadUi('qt.ui', self)
         loadUi('001.ui', self)
