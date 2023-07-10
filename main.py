@@ -1,6 +1,4 @@
-__author__ = 'Mehmet Cagri Aksoy - github.com/mcagriaksoy'
-
-import sys, os, serial, serial.tools.list_ports, warnings
+import sys, os, serial, serial.tools.list_ports
 from PyQt5.QtCore import *
 import time
 from PyQt5.QtWidgets import *
@@ -15,6 +13,15 @@ response = ''
 response_success = ''
 zones_count = 0
 zones_write_count = 0
+
+zone_0200_mem = ''
+zone_0400_mem = ''
+zone_0500_mem = ''
+zone_0600_mem = ''
+zone_2100_mem = ''
+
+hw_info = ''
+sw_info = ''
 
 
 # MULTI-THREADING
@@ -62,36 +69,38 @@ class qt(QMainWindow):
         self.CopyFlag = 0
 
     def start_loop(self):
-        # mytext = "\n"  # Send first enter
         global ser
         if self.connect_button_conn.text() == 'Disconnect':
             self.worker.working = False
             self.worker.finished.connect(self.thread.quit)
             ser.close()
-            self.textBrowser.setText('Port ' + self.port_list_combo.currentText() + ' was closed')
-            self.textBrowser.setStyleSheet('color: red')
+            self.info_label.setText('Port ' + self.port_list_combo.currentText() + ' was closed')
+            self.info_label.setStyleSheet('color: red')
             self.read_data.setEnabled(False)
+            self.connect_to_matrix_screen.setEnabled(False)
             self.read_faults.setEnabled(False)
             self.clear_faults.setEnabled(False)
+            self.write_button.setEnabled(False)
+            self.config_save.setEnabled(False)
+            self.config_load.setEnabled(False)
             self.port_list_combo.setEnabled(True)
             self.group_zones_to_write.setEnabled(False)
-            self.connect_button_conn.setText('Connect')
+            self.connect_button_conn.setText('Connect to port')
             return
         else:
-            self.textBrowser.setStyleSheet('color: black')
+            self.info_label.setStyleSheet('color: green')
             pass
         ports = self.port_list_combo.currentText()
 
         if ports == '':
-            self.textBrowser.setText('No COM port selected!')
+            self.info_label.setStyleSheet('color: red')
+            self.info_label.setText('No COM port selected!')
             return
         else:
             ser = serial.Serial(self.port_list_combo.currentText(), 115200, timeout=1)
         self.connect_button_conn.setText('Disconnect')
         self.port_list_combo.setEnabled(False)
-        self.read_data.setEnabled(True)
-        self.read_faults.setEnabled(True)
-        self.clear_faults.setEnabled(True)
+        self.connect_to_matrix_screen.setEnabled(True)
         self.worker = Worker()  # a new worker to perform those tasks
         self.thread = QThread()  # a new thread to run our background tasks in
         self.worker.moveToThread(
@@ -104,10 +113,16 @@ class qt(QMainWindow):
         self.worker.finished.connect(self.worker.deleteLater)  # have worker mark itself for deletion
         self.thread.finished.connect(self.thread.deleteLater)  # have thread mark itself for deletion
         self.thread.start()
-        self.unlock_for_read_thread()
 
     def onIntReady(self, i):
         global response_success
+        global hw_info
+        global sw_info
+        global zone_0200_mem
+        global zone_0400_mem
+        global zone_0500_mem
+        global zone_0600_mem
+        global zone_2100_mem
         if i != '':
             a = i
             a = str(a).replace("\n", "").replace("\r", "")
@@ -118,6 +133,7 @@ class qt(QMainWindow):
                         self.zone_0200.setText(data_to_zone)
                         self.zone_0201.setText(data_to_zone)
                         self.zone_0201.setEnabled(True)
+                        zone_0200_mem = data_to_zone
                     else:
                         pass
                 if i[2] + i[3] + i[4] + i[5] == '0400':
@@ -126,6 +142,7 @@ class qt(QMainWindow):
                         self.zone_0400.setText(data_to_zone)
                         self.zone_0401.setText(data_to_zone)
                         self.zone_0401.setEnabled(True)
+                        zone_0400_mem = data_to_zone
                     else:
                         pass
                 if i[2] + i[3] + i[4] + i[5] == '0500':
@@ -134,6 +151,7 @@ class qt(QMainWindow):
                         self.zone_0500.setText(data_to_zone)
                         self.zone_0501.setText(data_to_zone)
                         self.zone_0501.setEnabled(True)
+                        zone_0500_mem = data_to_zone
                     else:
                         pass
                 if i[2] + i[3] + i[4] + i[5] == '0600':
@@ -142,6 +160,7 @@ class qt(QMainWindow):
                         self.zone_0600.setText(data_to_zone)
                         self.zone_0601.setText(data_to_zone)
                         self.zone_0601.setEnabled(True)
+                        zone_0600_mem = data_to_zone
                     else:
                         pass
                 if i[2] + i[3] + i[4] + i[5] == '2100':
@@ -149,7 +168,12 @@ class qt(QMainWindow):
                     if float(len(data_to_zone) / 2).is_integer():
                         self.zone_2100.setText(data_to_zone)
                         self.zone_2101.setText(data_to_zone)
+                        zone_2100_mem = data_to_zone
                         self.zone_2101.setEnabled(True)
+                        self.read_faults.setEnabled(True)
+                        self.clear_faults.setEnabled(True)
+                        self.config_save.setEnabled(True)
+                        self.config_load.setEnabled(True)
                         self.write_button.setEnabled(True)
                         self.group_zones_to_write.setEnabled(True)
                     else:
@@ -157,6 +181,38 @@ class qt(QMainWindow):
                 if i[2] + i[3] + i[4] + i[5] == '2901':
                     data_to_zone = i.replace('62', '').replace(' ', '').replace('\r', '').replace('\n', '')
                     print(data_to_zone)
+
+                if i[2] + i[3] == 'F0':
+                    if i[4] + i[5] == '80':
+                        hw_info = i.replace('62F080', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                        if len(hw_info) < 24:
+                            pass
+                        else:
+                            h = hw_info
+                            hw_version = h[14] + h[15] + ' ' + h[16] + h[17] + h[18] + ' ' + h[19] + h[20] + h[
+                                21] + ' ' + h[22] + h[23]
+                            self.hw_label.setText('HW:')
+                            self.hw_label_id.setText(hw_version)
+                        print(f'hw_info =  {len(hw_info)}')
+                    if i[4] + i[5] == 'FE':
+                        sw_info = i.replace('62F0FE', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                        if len(sw_info) < 19:
+                            pass
+                        else:
+                            s = sw_info
+                            sw_version = '96 ' + s[14] + s[15] + s[16] + ' ' + s[17] + s[18] + s[19] + ' 80'
+                            self.sw_label.setText('SW:')
+                            self.sw_label_id.setText(sw_version)
+                        print(f'hw_info =  {len(hw_info)}')
+
+                        print(f'sw_info =  {len(sw_info)}')
+                    print(hw_info)
+                    print(sw_info)
+                    self.textBrowser.append(a)
+                    print(a)
+
+                else:
+                    self.textBrowser.append(a)
 
             elif i[0] + i[1] == '6E':
                 data_from_zone = i[2] + i[3] + i[4] + i[5]
@@ -174,13 +230,15 @@ class qt(QMainWindow):
         ports = self.port_list_combo.currentText()
 
         if ports == '':
-            self.textBrowser.setText('No COM port selected!')
+            self.info_label.setStyleSheet('color: red')
+            self.info_label.setText('No COM port selected!')
             return
         # Port Detection END
 
         if ports[0]:
             x = 1
-            self.textBrowser.setText('Port ' + self.port_list_combo.currentText() + ' opened successfully')
+            self.info_label.setStyleSheet('color: red')
+            self.info_label.setText('Connected to com port ' + self.port_list_combo.currentText() + '!')
         self.connect_button = True
 
     def on_pushButton_3_clicked(self):
@@ -189,8 +247,6 @@ class qt(QMainWindow):
             self.connect_button = False
             return
         mytext = str(self.lineEdit.text().replace(' ', '')) + '\n'
-        # mytext = self.lineEdit.toPlainText() + "\n"
-        print(mytext.encode())
         ser.write(mytext.encode())
         self.connect_button = True
 
@@ -200,7 +256,6 @@ class qt(QMainWindow):
         ser.flush()
         sleep(0.05)
         write_str = ('2E' + zone + data_to_write + '\n').encode()
-        print(write_str)
         ser.write(write_str)
         resp = 0
         while str(response) != (str(b'6E' + zone.encode() + b'\r\n')):
@@ -229,11 +284,9 @@ class qt(QMainWindow):
         write_str = ('22' + zone + '\n').encode()
         ser.write(write_str)
         while eval(zone_name).text() == ' ' and not (float(len(eval(zone_name).text())) / 2).is_integer():
-            # print('Trying to read zone ' +zone)
             ser.flush()
             sleep(0.1)
             ser.write(write_str)
-            # print(float(len(eval(zone_name).text())))
 
         zones_count += 1
         self.read_progress.setValue(zones_count)
@@ -241,6 +294,8 @@ class qt(QMainWindow):
 
     def unlock_before_read_data(self):
         # First unlock of Arduino
+        global hw_info
+        global sw_info
         global response
         ser.flush()
         sleep(0.05)
@@ -266,8 +321,15 @@ class qt(QMainWindow):
                     ser.flush()
                     ser.write(('1003' + '\n').encode())
             if str(response) == (str(b'5003\r\n')):
-                self.connect_button = True
-                pass
+                if hw_info == '':
+                    ser.write(('22F080' + '\n').encode())
+                    sleep(0.1)
+                if sw_info == '':
+                    ser.write(('22F0FE' + '\n').encode())
+                    sleep(0.1)
+        self.read_data.setEnabled(True)
+        self.info_label.setText('Connected to matrix screen!')
+        self.connect_button = True
 
     def read_data_thread(self):
         global response
@@ -349,6 +411,9 @@ class qt(QMainWindow):
         t3 = Thread(target=self.unlock_before_read_data)
         t3.start()
 
+    def on_connect_to_matrix_screen_clicked(self):
+        self.unlock_for_read_thread()
+
     def on_read_data_clicked(self):
         # Send data from serial port:
         self.textBrowser.setStyleSheet('color: black')
@@ -389,6 +454,72 @@ class qt(QMainWindow):
         self.textBrowser.setText('')
         ser.flush()
         ser.write(('190209' + '\n').encode())
+        self.connect_button = True
+
+    def open_config_tread(self):
+        global hw_info
+        global sw_info
+        global zone_0200_mem
+        global zone_0400_mem
+        global zone_0500_mem
+        global zone_0600_mem
+        global zone_2100_mem
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getOpenFileName(self, "Open configuration file", "",
+                                                  "PSA screen config file (*.matt)", options=options)
+        if fileName:
+            file = open(fileName, 'r')
+            hw_info = file.readline().replace('\n', '').replace('\r', '')
+            sw_info = file.readline().replace('\n', '').replace('\r', '')
+            zone_0200_mem = file.readline().replace('\n', '').replace('\r', '')
+            zone_0400_mem = file.readline().replace('\n', '').replace('\r', '')
+            zone_0500_mem = file.readline().replace('\n', '').replace('\r', '')
+            zone_0600_mem = file.readline().replace('\n', '').replace('\r', '')
+            zone_2100_mem = file.readline().replace('\n', '').replace('\r', '')
+            self.zone_0201.setText(zone_0200_mem)
+            self.zone_0401.setText(zone_0400_mem)
+            self.zone_0501.setText(zone_0500_mem)
+            self.zone_0601.setText(zone_0600_mem)
+            self.zone_2101.setText(zone_2100_mem)
+            file.close()
+            return
+
+    def write_config_tread(self):
+        global hw_info
+        global sw_info
+        global zone_0200_mem
+        global zone_0400_mem
+        global zone_0500_mem
+        global zone_0600_mem
+        global zone_2100_mem
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getSaveFileName(self, "Save configuration file", "",
+                                                  "PSA screen config file (*.matt)", options=options)
+        if fileName:
+            file = open(fileName, 'w')
+            file.write(hw_info + '\n')
+            file.write(sw_info + '\n')
+            file.write(zone_0200_mem + '\n')
+            file.write(zone_0400_mem + '\n')
+            file.write(zone_0500_mem + '\n')
+            file.write(zone_0600_mem + '\n')
+            file.write(zone_2100_mem + '\n')
+            file.close()
+
+    def on_config_load_clicked(self):
+        if self.connect_button:
+            self.connect_button = False
+            return
+        t4 = Thread(target=self.open_config_tread())
+        t4.start()
+        self.connect_button = True
+
+    def on_config_save_clicked(self):
+        if self.connect_button:
+            self.connect_button = False
+            return
+        t5 = Thread(target=self.write_config_tread())
+        t5.start()
         self.connect_button = True
 
 
