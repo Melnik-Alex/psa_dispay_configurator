@@ -13,6 +13,7 @@ response = ''
 response_success = ''
 zones_count = 0
 zones_write_count = 0
+error_write_flag = 0
 
 zone_0200_mem = ''
 zone_0400_mem = ''
@@ -116,6 +117,7 @@ class qt(QMainWindow):
 
     def onIntReady(self, i):
         global response_success
+        global error_write_flag
         global hw_info
         global sw_info
         global zone_0200_mem
@@ -193,7 +195,6 @@ class qt(QMainWindow):
                                 21] + ' ' + h[22] + h[23]
                             self.hw_label.setText('HW:')
                             self.hw_label_id.setText(hw_version)
-                        print(f'hw_info =  {len(hw_info)}')
                     if i[4] + i[5] == 'FE':
                         sw_info = i.replace('62F0FE', '').replace(' ', '').replace('\r', '').replace('\n', '')
                         if len(sw_info) < 19:
@@ -203,19 +204,22 @@ class qt(QMainWindow):
                             sw_version = '96 ' + s[14] + s[15] + s[16] + ' ' + s[17] + s[18] + s[19] + ' 80'
                             self.sw_label.setText('SW:')
                             self.sw_label_id.setText(sw_version)
-                        print(f'hw_info =  {len(hw_info)}')
-
-                        print(f'sw_info =  {len(sw_info)}')
-                    print(hw_info)
-                    print(sw_info)
-                    self.textBrowser.append(a)
-                    print(a)
 
                 else:
                     self.textBrowser.append(a)
 
             elif i[0] + i[1] == '6E':
                 data_from_zone = i[2] + i[3] + i[4] + i[5]
+                response_success = i
+
+            elif i[0] + i[1] == '7F':
+                if i[2] + i[3]+ i[4]+ i[5] == '2E31':
+                    error_write_flag += 1
+                    self.info_label.setStyleSheet('color: red')
+                    self.textBrowser.append('Write data error. Trying ' + str(error_write_flag) + ' from 5')
+                else:
+                    response_success = i
+                    self.textBrowser.append(a)
                 response_success = i
 
             else:
@@ -251,28 +255,46 @@ class qt(QMainWindow):
         self.connect_button = True
 
     def write_zone(self, zone, data_to_write):
+        if self.connect_button:
+            self.connect_button = False
         # Writing zones to LCD
         global zones_write_count
+        global error_write_flag
+        emergency_end = False
         ser.flush()
         sleep(0.05)
+        self.textBrowser.append('Writing zone ' + zone)
         write_str = ('2E' + zone + data_to_write + '\n').encode()
         ser.write(write_str)
         resp = 0
+        error_write_flag = 0
         while str(response) != (str(b'6E' + zone.encode() + b'\r\n')):
             resp += 1
             sleep(0.01)
             if resp == 100:
                 resp = 0
-                ser.flush()
+                #ser.flush()
                 ser.write(('2E' + zone + data_to_write + '\n').encode())
+            if error_write_flag == 5:  # Exit by timeout
+                emergency_end = True
+                self.textBrowser.append('Zone ' + zone + ' was NOT written!')
+                self.textBrowser.setStyleSheet('color: red')
+                error_write_flag = 0
+                self.connect_button = True
+                break
         resp = 0
 
         zones_write_count += 1
-        self.write_progress.setValue(zones_write_count)
+        # self.write_progress.setValue(zones_write_count)
         if zone == '2901':
             self.textBrowser.append('Security zone was written!')
         else:
-            self.textBrowser.append('Zone ' + zone + ' was written!')
+            if emergency_end:
+                pass
+            else:
+                self.textBrowser.append('Zone ' + zone + ' was written!')
+                self.textBrowser.setStyleSheet('color: green')
+        self.connect_button = True
 
     def read_zone(self, zone):
         # Reading zones from LCD
@@ -360,6 +382,8 @@ class qt(QMainWindow):
             sleep(1)
 
     def write_data_thread(self):
+        if self.connect_button:
+            self.connect_button = False
         global zones_write_count
         data_0200 = self.zone_0201.text().replace(' ', '').replace('\r', '').replace('\n', '')
         data_0400 = self.zone_0401.text().replace(' ', '').replace('\r', '').replace('\n', '')

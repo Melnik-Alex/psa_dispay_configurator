@@ -1,5 +1,1 @@
-
-a1 = ' '
-
-a2 = (float(len(a1))/2).is_integer()
-print(a2)
+print(len('95 F2 00 0029EC 0A 03 11 120000000A0311FE000000FE925365'))
