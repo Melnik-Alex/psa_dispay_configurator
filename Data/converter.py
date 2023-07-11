@@ -12,7 +12,6 @@ class Converter():
 
     def converter_from_hex(self, hex_data):
         # Converting from HEX to Bin
-        print(hex_data)
         parts_len = int(len(hex_data) / 2)
         parts = self.separator(hex_data)
         converted_bin = []
@@ -34,9 +33,8 @@ class Converter():
         for binary in binary_data:
             small_hex = self.get_hex(binary)
             final_hex = final_hex + small_hex
-        print(final_hex)
         return final_hex
 
 
 convert = Converter()
-convert.converter_from_hex('00ED6E7220211CE090')
+#convert.converter_from_hex('00ED6E7220211CE090')

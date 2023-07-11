@@ -9,10 +9,13 @@ from threading import Thread
 
 from time import sleep
 
+from Data.converter import Converter
+
 response = ''
 response_success = ''
 zones_count = 0
 zones_write_count = 0
+zones_progress_bar_len = 1
 
 zone_0200_mem = ''
 zone_0400_mem = ''
@@ -78,6 +81,8 @@ class qt(QMainWindow):
             self.info_label.setStyleSheet('color: red')
             self.read_data.setEnabled(False)
             self.connect_to_matrix_screen.setEnabled(False)
+            self.connect_to_matrix_screen.setStyleSheet('color: gray')
+            self.connect_to_matrix_screen.setText('Connect to matrix screen')
             self.read_faults.setEnabled(False)
             self.clear_faults.setEnabled(False)
             self.write_button.setEnabled(False)
@@ -101,6 +106,8 @@ class qt(QMainWindow):
         self.connect_button_conn.setText('Disconnect')
         self.port_list_combo.setEnabled(False)
         self.connect_to_matrix_screen.setEnabled(True)
+        self.connect_to_matrix_screen.setStyleSheet('color: black')
+        self.connect_to_matrix_screen.setText('Connect to matrix screen')
         self.worker = Worker()  # a new worker to perform those tasks
         self.thread = QThread()  # a new thread to run our background tasks in
         self.worker.moveToThread(
@@ -193,7 +200,6 @@ class qt(QMainWindow):
                                 21] + ' ' + h[22] + h[23]
                             self.hw_label.setText('HW:')
                             self.hw_label_id.setText(hw_version)
-                        print(f'hw_info =  {len(hw_info)}')
                     if i[4] + i[5] == 'FE':
                         sw_info = i.replace('62F0FE', '').replace(' ', '').replace('\r', '').replace('\n', '')
                         if len(sw_info) < 19:
@@ -203,13 +209,6 @@ class qt(QMainWindow):
                             sw_version = '96 ' + s[14] + s[15] + s[16] + ' ' + s[17] + s[18] + s[19] + ' 80'
                             self.sw_label.setText('SW:')
                             self.sw_label_id.setText(sw_version)
-                        print(f'hw_info =  {len(hw_info)}')
-
-                        print(f'sw_info =  {len(sw_info)}')
-                    print(hw_info)
-                    print(sw_info)
-                    self.textBrowser.append(a)
-                    print(a)
 
                 else:
                     self.textBrowser.append(a)
@@ -217,6 +216,23 @@ class qt(QMainWindow):
             elif i[0] + i[1] == '6E':
                 data_from_zone = i[2] + i[3] + i[4] + i[5]
                 response_success = i
+
+            elif i[0] + i[1] == '59':
+                if i[2] + i[3] + i[4] + i[5] == '0209':
+                    faults = i.replace('590209', '').replace(' ', '').replace('\r', '').replace('\n', '')
+                    if faults == '':
+                        faults = 'No faults!'
+                        self.fault_row.setStyleSheet('color: green')
+                    else:
+                        self.fault_row.setStyleSheet('color: red')
+                    self.fault_row.setText(faults)
+                else:
+                    pass
+
+            elif i[0] + i[1] == '54':
+                self.fault_row.setText('Faults cleared')
+                self.fault_row.setStyleSheet('color: green')
+
 
             else:
                 self.textBrowser.append(a)
@@ -258,13 +274,19 @@ class qt(QMainWindow):
         write_str = ('2E' + zone + data_to_write + '\n').encode()
         ser.write(write_str)
         resp = 0
+        emergency_stop = 0
         while str(response) != (str(b'6E' + zone.encode() + b'\r\n')):
             resp += 1
+            emergency_stop +=1
             sleep(0.01)
             if resp == 100:
                 resp = 0
                 ser.flush()
                 ser.write(('2E' + zone + data_to_write + '\n').encode())
+                if emergency_stop == 1000:
+                    self.textBrowser.append('Zone ' + zone + ' was NOT written!')
+                    return
+
         resp = 0
 
         zones_write_count += 1
@@ -328,7 +350,10 @@ class qt(QMainWindow):
                     ser.write(('22F0FE' + '\n').encode())
                     sleep(0.1)
         self.read_data.setEnabled(True)
-        self.info_label.setText('Connected to matrix screen!')
+        self.connect_to_matrix_screen.setStyleSheet('color: green')
+        self.connect_to_matrix_screen.setText('Connected to matrix screen!')
+        self.connect_to_matrix_screen.setEnabled(False)
+        self.info_label.setText('')
         self.connect_button = True
 
     def read_data_thread(self):
@@ -361,37 +386,47 @@ class qt(QMainWindow):
 
     def write_data_thread(self):
         global zones_write_count
+        global zones_progress_bar_len
+        self.write_progress.setValue(0)
+        if self.zone_0200_write.isChecked():
+            zones_progress_bar_len +=1
+        if self.zone_0400_write.isChecked():
+            zones_progress_bar_len +=1
+        if self.zone_0500_write.isChecked():
+            zones_progress_bar_len +=1
+        if self.zone_0600_write.isChecked():
+            zones_progress_bar_len +=1
+        if self.zone_2100_write.isChecked():
+            zones_progress_bar_len +=1
+        print(zones_progress_bar_len)
+        self.write_progress.setMaximum(zones_progress_bar_len)
+
         data_0200 = self.zone_0201.text().replace(' ', '').replace('\r', '').replace('\n', '')
         data_0400 = self.zone_0401.text().replace(' ', '').replace('\r', '').replace('\n', '')
         data_0500 = self.zone_0501.text().replace(' ', '').replace('\r', '').replace('\n', '')
         data_0600 = self.zone_0601.text().replace(' ', '').replace('\r', '').replace('\n', '')
         data_2100 = self.zone_2101.text().replace(' ', '').replace('\r', '').replace('\n', '')
-        if 14 > len(data_2100):
-            self.textBrowser.setText(
-                'Data too short - ' + str(len(data_2100)) + ' symbols.' + '\n' + 'Expected more (14 max)')
-            return
-        else:
-            pass
-        if len(data_2100) > 18:
-            self.textBrowser.setText(
-                'Data too long - ' + str(len(data_2100)) + ' symbols' + '\n' + 'Expected less (18 max)')
-            return
-        else:
-            pass
+
         self.unlock_display()
         self.textBrowser.append('Display unlocked')
         ser.flush()
         sleep(1)
         self.textBrowser.append('Start writing')
-        self.write_zone(zone='0200', data_to_write=data_0200)
-        self.write_zone(zone='0400', data_to_write=data_0400)
-        self.write_zone(zone='0500', data_to_write=data_0500)
-        self.write_zone(zone='0600', data_to_write=data_0600)
-        self.write_zone(zone='2100', data_to_write=data_2100)
+        if self.zone_0200_write.isChecked():
+            self.write_zone(zone='0200', data_to_write=data_0200)
+        if self.zone_0400_write.isChecked():
+            self.write_zone(zone='0400', data_to_write=data_0400)
+        if self.zone_0500_write.isChecked():
+            self.write_zone(zone='0500', data_to_write=data_0500)
+        if self.zone_0600_write.isChecked():
+            self.write_zone(zone='0600', data_to_write=data_0600)
+        if self.zone_2100_write.isChecked():
+            self.write_zone(zone='2100', data_to_write=data_2100)
         self.write_zone(zone='2901', data_to_write='FD000000010101')
         ser.write(('222901' + '\n').encode())
 
         zones_write_count = 0
+        zones_progress_bar_len = 1
         self.connect_button = True
 
     def new_thread(self):
@@ -440,7 +475,7 @@ class qt(QMainWindow):
         if self.connect_button:
             self.connect_button = False
             return
-        self.textBrowser.setText('')
+        self.fault_row.setText('')
         ser.flush()
         ser.write(('14FFFFFF' + '\n').encode())
         self.connect_button = True
@@ -451,7 +486,7 @@ class qt(QMainWindow):
         if self.connect_button:
             self.connect_button = False
             return
-        self.textBrowser.setText('')
+        self.fault_row.setText('')
         ser.flush()
         ser.write(('190209' + '\n').encode())
         self.connect_button = True
@@ -520,6 +555,55 @@ class qt(QMainWindow):
             return
         t5 = Thread(target=self.write_config_tread())
         t5.start()
+        self.connect_button = True
+
+    def on_calculate_2100_button_clicked(self):
+        if self.connect_button:
+            self.connect_button = False
+            return
+        zone_2100_data = zone_2100_mem
+        convert = Converter()
+        bin_data_2100_0 = convert.converter_from_hex(zone_2100_data)[0]
+        if bin_data_2100_0[0] == '0':
+            self.cb_2100_00_0.setChecked(False)
+        else:
+            self.cb_2100_00_0.setChecked(True)
+
+        if bin_data_2100_0[1] == '0':
+            self.cb_2100_00_1.setChecked(False)
+        else:
+            self.cb_2100_00_1.setChecked(True)
+
+        if bin_data_2100_0[2] == '0':
+            self.cb_2100_00_2.setChecked(False)
+        else:
+            self.cb_2100_00_2.setChecked(True)
+
+        if bin_data_2100_0[3] == '0':
+            self.cb_2100_00_3.setChecked(False)
+        else:
+            self.cb_2100_00_3.setChecked(True)
+
+        if bin_data_2100_0[4] == '0':
+            self.cb_2100_00_4.setChecked(False)
+        else:
+            self.cb_2100_00_4.setChecked(True)
+
+        if bin_data_2100_0[5] == '0':
+            self.cb_2100_00_5.setChecked(False)
+        else:
+            self.cb_2100_00_5.setChecked(True)
+
+        if bin_data_2100_0[6] == '0':
+            self.cb_2100_00_6.setChecked(False)
+        else:
+            self.cb_2100_00_6.setChecked(True)
+        if bin_data_2100_0[7] == '0':
+            self.cb_2100_00_7.setChecked(False)
+        else:
+            self.cb_2100_00_7.setChecked(True)
+        print(bin_data_2100_0)
+        print(zone_2100_data)
         self.connect_button = True
 
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1067</width>
+    <width>905</width>
     <height>784</height>
    </rect>
   </property>
@@ -140,16 +140,19 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>350</x>
       <y>10</y>
-      <width>231</width>
-      <height>231</height>
+      <width>251</width>
+      <height>221</height>
      </rect>
     </property>
     <property name="title">
      <string>Readed zones</string>
     </property>
     <widget class="QLabel" name="label">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>21</x>
@@ -163,6 +166,9 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>21</x>
@@ -176,6 +182,9 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>21</x>
@@ -189,6 +198,9 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>21</x>
@@ -202,6 +214,9 @@
      </property>
     </widget>
     <widget class="QLabel" name="label_6">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>21</x>
@@ -215,11 +230,14 @@
      </property>
     </widget>
     <widget class="QProgressBar" name="read_progress">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>150</y>
-       <width>211</width>
+       <width>226</width>
        <height>16</height>
       </rect>
      </property>
@@ -400,6 +418,22 @@
       <string notr="true"/>
      </property>
     </widget>
+    <widget class="QPushButton" name="read_data">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>180</y>
+       <width>200</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Read configuration</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
@@ -423,7 +457,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -676,7 +710,7 @@
        <property name="geometry">
         <rect>
          <x>720</x>
-         <y>190</y>
+         <y>270</y>
          <width>31</width>
          <height>23</height>
         </rect>
@@ -689,7 +723,7 @@
        <property name="geometry">
         <rect>
          <x>520</x>
-         <y>190</y>
+         <y>270</y>
          <width>191</width>
          <height>20</height>
         </rect>
@@ -699,9 +733,9 @@
        <property name="geometry">
         <rect>
          <x>520</x>
-         <y>30</y>
+         <y>10</y>
          <width>231</width>
-         <height>151</height>
+         <height>251</height>
         </rect>
        </property>
       </widget>
@@ -1963,56 +1997,56 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="cb_2100_00_0">
            <property name="text">
             <string>Поиск свободного места</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_2">
+          <widget class="QCheckBox" name="cb_2100_00_1">
            <property name="text">
             <string>N/A</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_3">
+          <widget class="QCheckBox" name="cb_2100_00_2">
            <property name="text">
             <string>Медиа из магинтолы (страница радио)</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_4">
+          <widget class="QCheckBox" name="cb_2100_00_3">
            <property name="text">
             <string>Указатель передачи кпп (наличие)</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_5">
+          <widget class="QCheckBox" name="cb_2100_00_4">
            <property name="text">
             <string>Круиз и лимиттер (предположительно лимиттер)</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_6">
+          <widget class="QCheckBox" name="cb_2100_00_5">
            <property name="text">
             <string>N/A</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_9">
+          <widget class="QCheckBox" name="cb_2100_00_6">
            <property name="text">
             <string>Меню параметров автомобиля</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_7">
+          <widget class="QCheckBox" name="cb_2100_00_7">
            <property name="text">
             <string>N/A</string>
            </property>
@@ -2030,10 +2064,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>610</x>
       <y>10</y>
-      <width>281</width>
-      <height>231</height>
+      <width>251</width>
+      <height>221</height>
      </rect>
     </property>
     <property name="title">
@@ -2109,7 +2143,7 @@
       <rect>
        <x>20</x>
        <y>150</y>
-       <width>251</width>
+       <width>226</width>
        <height>16</height>
       </rect>
      </property>
@@ -2345,7 +2379,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Write</string>
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="zone_0400_write">
@@ -2358,7 +2395,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Write</string>
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="zone_0500_write">
@@ -2371,7 +2411,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Write</string>
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="zone_0600_write">
@@ -2384,7 +2427,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Write</string>
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="zone_2100_write">
@@ -2397,7 +2443,26 @@
       </rect>
      </property>
      <property name="text">
-      <string>Write</string>
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="write_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>180</y>
+       <width>200</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Write configuration</string>
      </property>
     </widget>
    </widget>
@@ -2405,31 +2470,15 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>110</y>
+      <y>120</y>
       <width>191</width>
       <height>111</height>
      </rect>
     </property>
     <property name="title">
-     <string>Read and write config</string>
+     <string>Backup and restore</string>
     </property>
-    <widget class="QPushButton" name="config_save">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Save</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="read_data">
+    <widget class="QPushButton" name="config_load">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -2442,10 +2491,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Read configuration</string>
+      <string>Restore configuration</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="write_button">
+    <widget class="QPushButton" name="config_save">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -2458,23 +2507,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Write configuration</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="config_load">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>80</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Load</string>
+      <string>Backup configuration</string>
      </property>
     </widget>
    </widget>
@@ -2482,7 +2515,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>110</y>
+      <y>120</y>
       <width>131</width>
       <height>111</height>
      </rect>
@@ -2525,6 +2558,38 @@
       <string>Clear faults</string>
      </property>
     </widget>
+    <widget class="QLineEdit" name="fault_row">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>113</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="frame">
+      <bool>false</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="calculate_2100_button">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>250</y>
+      <width>201</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Calculate zone 2100 bin</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -2535,7 +2600,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1067</width>
+     <width>905</width>
      <height>21</height>
     </rect>
    </property>
