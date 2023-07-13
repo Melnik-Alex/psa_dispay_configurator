@@ -4,6 +4,7 @@ import os, json, datetime, hashlib
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     ctime = datetime.datetime.now()
@@ -33,7 +34,8 @@ def index():
                 except OSError:
                     pass
 
-                with open('post_data/'+ data['userId'] + '/' + str(ctime.year) + '/' + str(ctime.month) + '/' + str(ctime.day) + '/' +data['userId']+'_data.json', 'w') as f:
+                with open('post_data/' + data['userId'] + '/' + str(ctime.year) + '/' + str(ctime.month) + '/' + str(
+                        ctime.day) + '/' + data['userId'] + str(ctime.strftime('%H-%M-%S')) + '_data.json', 'w') as f:
                     json.dump(request.json, f, indent=4)
                 response = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
                 return response
