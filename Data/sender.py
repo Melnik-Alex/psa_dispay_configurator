@@ -8,7 +8,7 @@ import json
 API_ENDPOINT = "http://62.113.105.77:1234"
 
 # your API key here
-API_KEY = "dBzQDgaML14XfPamrPcXQA"
+VERSION = 'V00011'
 USER_ID = str(uuid.getnode())
 
 
@@ -31,10 +31,21 @@ class Sender():
         r = requests.post(url=API_ENDPOINT, json=data)
 
         # extracting response text
-        response = r.text
-        assert hash_data == response, 'Контрольные суммы не совпадают!'
+        response = r.json()
+        version = response['version']
+        response_hash = response['secret']
         print('Recived hash: ', hash_data)
         print('Calculated hash: ', response)
+        try:
+            assert VERSION == version
+            print('Версии совпадают!')
+        except:
+            print('Версии не совпадают!')
+        try:
+            assert hash_data == response_hash
+            print('Контрольные суммы совпадают!')
+        except:
+            print('Контрольные суммы не совпадают!')
         return response
 
 
