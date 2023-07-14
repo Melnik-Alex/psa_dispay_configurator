@@ -123,9 +123,9 @@
     <widget class="QLabel" name="info_label">
      <property name="geometry">
       <rect>
-       <x>142</x>
+       <x>144</x>
        <y>70</y>
-       <width>173</width>
+       <width>171</width>
        <height>20</height>
       </rect>
      </property>
@@ -134,6 +134,9 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>
@@ -436,11 +439,14 @@
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>340</y>
-      <width>841</width>
+      <width>861</width>
       <height>401</height>
      </rect>
     </property>
@@ -457,7 +463,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -705,39 +711,6 @@
          </item>
         </layout>
        </widget>
-      </widget>
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="geometry">
-        <rect>
-         <x>720</x>
-         <y>270</y>
-         <width>31</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>PushButton</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="geometry">
-        <rect>
-         <x>520</x>
-         <y>270</y>
-         <width>191</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser">
-       <property name="geometry">
-        <rect>
-         <x>520</x>
-         <y>10</y>
-         <width>231</width>
-         <height>251</height>
-        </rect>
-       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
@@ -1999,7 +1972,7 @@
          <item>
           <widget class="QCheckBox" name="cb_2100_00_0">
            <property name="text">
-            <string>Поиск свободного места</string>
+            <string>Searching of free space at parking</string>
            </property>
           </widget>
          </item>
@@ -2013,21 +1986,21 @@
          <item>
           <widget class="QCheckBox" name="cb_2100_00_2">
            <property name="text">
-            <string>Медиа из магинтолы (страница радио)</string>
+            <string>Media from radio unit</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="cb_2100_00_3">
            <property name="text">
-            <string>Указатель передачи кпп (наличие)</string>
+            <string>Presence of AT gearbox</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="cb_2100_00_4">
            <property name="text">
-            <string>Круиз и лимиттер (предположительно лимиттер)</string>
+            <string>Cruise/Limitter options</string>
            </property>
           </widget>
          </item>
@@ -2041,7 +2014,7 @@
          <item>
           <widget class="QCheckBox" name="cb_2100_00_6">
            <property name="text">
-            <string>Меню параметров автомобиля</string>
+            <string>Presence of car parameters menu</string>
            </property>
           </widget>
          </item>
@@ -2054,6 +2027,42 @@
          </item>
         </layout>
        </widget>
+      </widget>
+      <widget class="QPushButton" name="calculate_2100_button">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>310</y>
+         <width>201</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Calculate zone 2100 bin</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="geometry">
+        <rect>
+         <x>440</x>
+         <y>310</y>
+         <width>31</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>PushButton</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>310</y>
+         <width>191</width>
+         <height>20</height>
+        </rect>
+       </property>
       </widget>
      </widget>
     </widget>
@@ -2578,17 +2587,17 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="calculate_2100_button">
+   <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>250</y>
-      <width>201</width>
-      <height>23</height>
+      <x>350</x>
+      <y>240</y>
+      <width>511</width>
+      <height>91</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Calculate zone 2100 bin</string>
+    <property name="openExternalLinks">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -2610,6 +2619,190 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>port_list_combo</tabstop>
+  <tabstop>connect_button_conn</tabstop>
+  <tabstop>connect_to_matrix_screen</tabstop>
+  <tabstop>read_data</tabstop>
+  <tabstop>zone_0200</tabstop>
+  <tabstop>zone_0400</tabstop>
+  <tabstop>zone_0500</tabstop>
+  <tabstop>zone_0600</tabstop>
+  <tabstop>zone_2100</tabstop>
+  <tabstop>zone_0201</tabstop>
+  <tabstop>zone_0401</tabstop>
+  <tabstop>zone_0501</tabstop>
+  <tabstop>zone_0601</tabstop>
+  <tabstop>zone_2101</tabstop>
+  <tabstop>zone_0200_write</tabstop>
+  <tabstop>zone_0400_write</tabstop>
+  <tabstop>zone_0500_write</tabstop>
+  <tabstop>zone_0600_write</tabstop>
+  <tabstop>zone_2100_write</tabstop>
+  <tabstop>write_button</tabstop>
+  <tabstop>config_load</tabstop>
+  <tabstop>config_save</tabstop>
+  <tabstop>read_faults</tabstop>
+  <tabstop>clear_faults</tabstop>
+  <tabstop>fault_row</tabstop>
+  <tabstop>textBrowser</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>checkBox_8</tabstop>
+  <tabstop>checkBox_10</tabstop>
+  <tabstop>checkBox_11</tabstop>
+  <tabstop>checkBox_12</tabstop>
+  <tabstop>checkBox_13</tabstop>
+  <tabstop>checkBox_14</tabstop>
+  <tabstop>checkBox_15</tabstop>
+  <tabstop>checkBox_16</tabstop>
+  <tabstop>checkBox_25</tabstop>
+  <tabstop>checkBox_26</tabstop>
+  <tabstop>checkBox_27</tabstop>
+  <tabstop>checkBox_28</tabstop>
+  <tabstop>checkBox_29</tabstop>
+  <tabstop>checkBox_30</tabstop>
+  <tabstop>checkBox_31</tabstop>
+  <tabstop>checkBox_32</tabstop>
+  <tabstop>checkBox_33</tabstop>
+  <tabstop>checkBox_34</tabstop>
+  <tabstop>checkBox_35</tabstop>
+  <tabstop>checkBox_36</tabstop>
+  <tabstop>checkBox_37</tabstop>
+  <tabstop>checkBox_38</tabstop>
+  <tabstop>checkBox_39</tabstop>
+  <tabstop>checkBox_40</tabstop>
+  <tabstop>checkBox_63</tabstop>
+  <tabstop>checkBox_64</tabstop>
+  <tabstop>checkBox_65</tabstop>
+  <tabstop>checkBox_66</tabstop>
+  <tabstop>checkBox_67</tabstop>
+  <tabstop>checkBox_68</tabstop>
+  <tabstop>checkBox_69</tabstop>
+  <tabstop>checkBox_70</tabstop>
+  <tabstop>checkBox_71</tabstop>
+  <tabstop>checkBox_72</tabstop>
+  <tabstop>checkBox_73</tabstop>
+  <tabstop>checkBox_74</tabstop>
+  <tabstop>checkBox_75</tabstop>
+  <tabstop>checkBox_76</tabstop>
+  <tabstop>checkBox_77</tabstop>
+  <tabstop>checkBox_78</tabstop>
+  <tabstop>checkBox_79</tabstop>
+  <tabstop>checkBox_80</tabstop>
+  <tabstop>checkBox_89</tabstop>
+  <tabstop>checkBox_90</tabstop>
+  <tabstop>checkBox_91</tabstop>
+  <tabstop>checkBox_92</tabstop>
+  <tabstop>checkBox_93</tabstop>
+  <tabstop>checkBox_94</tabstop>
+  <tabstop>checkBox_95</tabstop>
+  <tabstop>checkBox_96</tabstop>
+  <tabstop>checkBox_97</tabstop>
+  <tabstop>checkBox_98</tabstop>
+  <tabstop>checkBox_99</tabstop>
+  <tabstop>checkBox_100</tabstop>
+  <tabstop>checkBox_101</tabstop>
+  <tabstop>checkBox_102</tabstop>
+  <tabstop>checkBox_103</tabstop>
+  <tabstop>checkBox_104</tabstop>
+  <tabstop>checkBox_105</tabstop>
+  <tabstop>checkBox_106</tabstop>
+  <tabstop>checkBox_107</tabstop>
+  <tabstop>checkBox_108</tabstop>
+  <tabstop>checkBox_109</tabstop>
+  <tabstop>checkBox_110</tabstop>
+  <tabstop>checkBox_111</tabstop>
+  <tabstop>checkBox_112</tabstop>
+  <tabstop>checkBox_113</tabstop>
+  <tabstop>checkBox_114</tabstop>
+  <tabstop>checkBox_115</tabstop>
+  <tabstop>checkBox_116</tabstop>
+  <tabstop>checkBox_117</tabstop>
+  <tabstop>checkBox_118</tabstop>
+  <tabstop>checkBox_119</tabstop>
+  <tabstop>checkBox_120</tabstop>
+  <tabstop>checkBox_121</tabstop>
+  <tabstop>checkBox_122</tabstop>
+  <tabstop>checkBox_123</tabstop>
+  <tabstop>checkBox_124</tabstop>
+  <tabstop>checkBox_125</tabstop>
+  <tabstop>checkBox_126</tabstop>
+  <tabstop>checkBox_127</tabstop>
+  <tabstop>checkBox_128</tabstop>
+  <tabstop>checkBox_129</tabstop>
+  <tabstop>checkBox_130</tabstop>
+  <tabstop>checkBox_131</tabstop>
+  <tabstop>checkBox_132</tabstop>
+  <tabstop>checkBox_133</tabstop>
+  <tabstop>checkBox_134</tabstop>
+  <tabstop>checkBox_135</tabstop>
+  <tabstop>checkBox_136</tabstop>
+  <tabstop>checkBox_137</tabstop>
+  <tabstop>checkBox_138</tabstop>
+  <tabstop>checkBox_139</tabstop>
+  <tabstop>checkBox_140</tabstop>
+  <tabstop>checkBox_141</tabstop>
+  <tabstop>checkBox_142</tabstop>
+  <tabstop>checkBox_143</tabstop>
+  <tabstop>checkBox_144</tabstop>
+  <tabstop>checkBox_145</tabstop>
+  <tabstop>checkBox_146</tabstop>
+  <tabstop>checkBox_147</tabstop>
+  <tabstop>checkBox_148</tabstop>
+  <tabstop>checkBox_149</tabstop>
+  <tabstop>checkBox_150</tabstop>
+  <tabstop>checkBox_151</tabstop>
+  <tabstop>checkBox_152</tabstop>
+  <tabstop>checkBox_153</tabstop>
+  <tabstop>checkBox_154</tabstop>
+  <tabstop>checkBox_155</tabstop>
+  <tabstop>checkBox_156</tabstop>
+  <tabstop>checkBox_157</tabstop>
+  <tabstop>checkBox_158</tabstop>
+  <tabstop>checkBox_159</tabstop>
+  <tabstop>checkBox_160</tabstop>
+  <tabstop>checkBox_161</tabstop>
+  <tabstop>checkBox_162</tabstop>
+  <tabstop>checkBox_163</tabstop>
+  <tabstop>checkBox_164</tabstop>
+  <tabstop>checkBox_165</tabstop>
+  <tabstop>checkBox_166</tabstop>
+  <tabstop>checkBox_167</tabstop>
+  <tabstop>checkBox_168</tabstop>
+  <tabstop>checkBox_169</tabstop>
+  <tabstop>checkBox_170</tabstop>
+  <tabstop>checkBox_171</tabstop>
+  <tabstop>checkBox_172</tabstop>
+  <tabstop>checkBox_173</tabstop>
+  <tabstop>checkBox_174</tabstop>
+  <tabstop>checkBox_175</tabstop>
+  <tabstop>checkBox_176</tabstop>
+  <tabstop>cb_2100_00_0</tabstop>
+  <tabstop>cb_2100_00_1</tabstop>
+  <tabstop>cb_2100_00_2</tabstop>
+  <tabstop>cb_2100_00_3</tabstop>
+  <tabstop>cb_2100_00_4</tabstop>
+  <tabstop>cb_2100_00_5</tabstop>
+  <tabstop>cb_2100_00_6</tabstop>
+  <tabstop>cb_2100_00_7</tabstop>
+  <tabstop>checkBox_59</tabstop>
+  <tabstop>checkBox_47</tabstop>
+  <tabstop>checkBox_48</tabstop>
+  <tabstop>checkBox_57</tabstop>
+  <tabstop>checkBox_58</tabstop>
+  <tabstop>checkBox_60</tabstop>
+  <tabstop>checkBox_61</tabstop>
+  <tabstop>checkBox_62</tabstop>
+  <tabstop>pushButton_3</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>checkBox_46</tabstop>
+  <tabstop>checkBox_41</tabstop>
+  <tabstop>checkBox_42</tabstop>
+  <tabstop>checkBox_43</tabstop>
+  <tabstop>checkBox_44</tabstop>
+  <tabstop>checkBox_45</tabstop>
+  <tabstop>calculate_2100_button</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
