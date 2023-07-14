@@ -18,6 +18,10 @@ class Sender():
     secret_key = '!;lO)DS!lsdfikLOIn*%&29431-0679823vcxlk11,dn'
     unic_id = str(subprocess.check_output('wmic csproduct get uuid').decode().split('\n')[1].strip())
 
+    def send_data_to_server(self, data):
+        resp = requests.post(url=server_adress, json=data, timeout=5.0)
+        return resp
+
     def send_data(self, rf080, rf0fe, r0200, r0400, r0500, r0600, r2100, w0200, w0400, w0500, w0600, w2100):
         data = {
             "userId": self.unic_id,
@@ -40,7 +44,7 @@ class Sender():
             json.dumps(data, sort_keys=True).encode('utf-8') + self.secret_key.encode('utf-8')).hexdigest()
         # sending post request and saving response as response object
         try:
-            r = requests.post(url=server_adress, json=data, timeout=5.0)
+            r = self.send_data_to_server(data)
         except ConnectTimeout:
             return 2
 
@@ -64,7 +68,7 @@ class Sender():
         version_hash_data = hashlib.md5(
             json.dumps(self.version_sw + self.version_key, sort_keys=True).encode('utf-8')).hexdigest()
         try:
-            r = requests.post(url=server_adress, json=data, timeout=5.0)
+            r = self.send_data_to_server(data)
         except ConnectTimeout:
             return 2
         try:
