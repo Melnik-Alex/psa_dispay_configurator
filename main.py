@@ -30,6 +30,12 @@ zone_0500_read = ''
 zone_0600_read = ''
 zone_2100_read = ''
 
+data_0200 = ''
+data_0400 = ''
+data_0500 = ''
+data_0600 = ''
+data_2100 = ''
+
 hw_info = ''
 sw_info = ''
 
@@ -294,15 +300,19 @@ class qt(QMainWindow):
         ser.write(write_str)
         resp = 0
         emergency_stop = 0
+        trying_count = 0
         while str(response) != (str(b'6E' + zone.encode() + b'\r\n')):
             resp += 1
             emergency_stop += 1
             sleep(0.01)
             if resp == 100:
                 resp = 0
+                trying_count += 1
+                self.textBrowser.append('Trying to write zone ' + zone + '(' + str(trying_count) + '/5)')
                 ser.flush()
                 ser.write(('2E' + zone + data_to_write + '\n').encode())
-                if emergency_stop == 1000:
+                if emergency_stop == 500:
+                    self.textBrowser.setStyleSheet('color: red')
                     self.textBrowser.append('Zone ' + zone + ' was NOT written!')
                     return
 
@@ -428,9 +438,14 @@ class qt(QMainWindow):
             sleep(1)
 
     def write_data_thread(self):
-
+        global data_0200
+        global data_0400
+        global data_0500
+        global data_0600
+        global data_2100
         global zones_write_count
         global zones_progress_bar_len
+
         self.write_progress.setValue(0)
         if self.zone_0200_write.isChecked():
             zones_progress_bar_len += 1
@@ -453,9 +468,10 @@ class qt(QMainWindow):
 
         send = Sender()
         send_and_write = send.send_data(rf080=hw_info, rf0fe=sw_info, r0200=zone_0200_read, r0400=zone_0400_read,
-                          r0500=zone_0500_read,
-                          r0600=zone_0600_read, r2100=zone_2100_read, w0200=data_0200, w0400=data_0400, w0500=data_0500,
-                          w0600=data_0600, w2100=data_2100)
+                                        r0500=zone_0500_read,
+                                        r0600=zone_0600_read, r2100=zone_2100_read, w0200=data_0200, w0400=data_0400,
+                                        w0500=data_0500,
+                                        w0600=data_0600, w2100=data_2100)
         if send_and_write == 1:
             self.textBrowser.setStyleSheet('color: green')
             self.textBrowser.append('Connected to server!')
@@ -556,6 +572,7 @@ class qt(QMainWindow):
         self.connect_button = True
 
     def open_config_tread(self):
+
         global hw_info
         global sw_info
         global zone_0200_mem
