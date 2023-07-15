@@ -76,7 +76,7 @@ class qt(QMainWindow):
         global response_success
         QMainWindow.__init__(self)
         # loadUi('qt.ui', self)
-        loadUi('main.ui', self)
+        loadUi('app_data/main.ui', self)
 
         self.thread = None
         self.worker = None

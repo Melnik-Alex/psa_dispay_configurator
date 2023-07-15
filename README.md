@@ -12,6 +12,8 @@ PSA matrix display configurator
 pyinstaller --clean --windowed --onedir --add-data helloGUI.ui;. qt_code.py
 pyinstaller -w -F -i "icon.ico" script.py
 pyinstaller --onefile --clean --windowed --icon=logo.ico main.py
+pyinstaller --onefile  --clean --windowed --icon=C:\Projects\psa_dispay_configurator\logo.ico --add-data="C:\Projects\psa_dispay_configurator\main.ui;." C:\Projects\psa_dispay_configurator\main.py
+
 
 
 Then later can eg pack it with eg Inno Setup https://jrsoftware.org/isinfo.php then get single setup.exe which has a installer.

@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <selectedon>logo.gif</selectedon>
+    <selectedon>logo.ico</selectedon>
    </iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -1975,7 +1975,7 @@
          <rect>
           <x>10</x>
           <y>20</y>
-          <width>221</width>
+          <width>222</width>
           <height>204</height>
          </rect>
         </property>
