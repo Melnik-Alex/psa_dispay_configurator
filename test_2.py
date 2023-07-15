@@ -52,7 +52,7 @@ class qt(QMainWindow):
         response_success
         QMainWindow.__init__(self)
         # loadUi('qt.ui', self)
-        loadUi('001.ui', self)
+        loadUi('main.ui', self)
 
         self.thread = None
         self.worker = None

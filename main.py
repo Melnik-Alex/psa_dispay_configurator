@@ -76,7 +76,7 @@ class qt(QMainWindow):
         global response_success
         QMainWindow.__init__(self)
         # loadUi('qt.ui', self)
-        loadUi('001.ui', self)
+        loadUi('main.ui', self)
 
         self.thread = None
         self.worker = None
@@ -638,54 +638,54 @@ class qt(QMainWindow):
         t5.start()
         self.connect_button = True
 
-    def on_calculate_2100_button_clicked(self):
-        if self.connect_button:
-            self.connect_button = False
-            return
-        zone_2100_data = zone_2100_mem
-        convert = Converter()
-        bin_data_2100_0 = convert.converter_from_hex(zone_2100_data)[0]
-        if bin_data_2100_0[0] == '0':
-            self.cb_2100_00_0.setChecked(False)
-        else:
-            self.cb_2100_00_0.setChecked(True)
-
-        if bin_data_2100_0[1] == '0':
-            self.cb_2100_00_1.setChecked(False)
-        else:
-            self.cb_2100_00_1.setChecked(True)
-
-        if bin_data_2100_0[2] == '0':
-            self.cb_2100_00_2.setChecked(False)
-        else:
-            self.cb_2100_00_2.setChecked(True)
-
-        if bin_data_2100_0[3] == '0':
-            self.cb_2100_00_3.setChecked(False)
-        else:
-            self.cb_2100_00_3.setChecked(True)
-
-        if bin_data_2100_0[4] == '0':
-            self.cb_2100_00_4.setChecked(False)
-        else:
-            self.cb_2100_00_4.setChecked(True)
-
-        if bin_data_2100_0[5] == '0':
-            self.cb_2100_00_5.setChecked(False)
-        else:
-            self.cb_2100_00_5.setChecked(True)
-
-        if bin_data_2100_0[6] == '0':
-            self.cb_2100_00_6.setChecked(False)
-        else:
-            self.cb_2100_00_6.setChecked(True)
-        if bin_data_2100_0[7] == '0':
-            self.cb_2100_00_7.setChecked(False)
-        else:
-            self.cb_2100_00_7.setChecked(True)
-        print(bin_data_2100_0)
-        print(zone_2100_data)
-        self.connect_button = True
+    # def on_calculate_2100_button_clicked(self):
+    #     if self.connect_button:
+    #         self.connect_button = False
+    #         return
+    #     zone_2100_data = zone_2100_mem
+    #     convert = Converter()
+    #     bin_data_2100_0 = convert.converter_from_hex(zone_2100_data)[0]
+    #     if bin_data_2100_0[0] == '0':
+    #         self.cb_2100_00_0.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_0.setChecked(True)
+    #
+    #     if bin_data_2100_0[1] == '0':
+    #         self.cb_2100_00_1.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_1.setChecked(True)
+    #
+    #     if bin_data_2100_0[2] == '0':
+    #         self.cb_2100_00_2.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_2.setChecked(True)
+    #
+    #     if bin_data_2100_0[3] == '0':
+    #         self.cb_2100_00_3.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_3.setChecked(True)
+    #
+    #     if bin_data_2100_0[4] == '0':
+    #         self.cb_2100_00_4.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_4.setChecked(True)
+    #
+    #     if bin_data_2100_0[5] == '0':
+    #         self.cb_2100_00_5.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_5.setChecked(True)
+    #
+    #     if bin_data_2100_0[6] == '0':
+    #         self.cb_2100_00_6.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_6.setChecked(True)
+    #     if bin_data_2100_0[7] == '0':
+    #         self.cb_2100_00_7.setChecked(False)
+    #     else:
+    #         self.cb_2100_00_7.setChecked(True)
+    #     print(bin_data_2100_0)
+    #     print(zone_2100_data)
+    #     self.connect_button = True
 
 
 def run():
